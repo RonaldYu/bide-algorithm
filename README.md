@@ -19,7 +19,7 @@ db = [
 ```
 Execute bide algorithm to find closed frequent patterns with the minimum support greater than or equal to 2, minimum length >=2, and maximum length <=5 on db by:
 ```
-bide_obj = bide_alg(db, 2 , 4, 5)
+bide_obj = bide_alg(db, 2 , 2, 5)
 bide_obj._mine()
 ```
 Show result:
