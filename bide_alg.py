@@ -2,10 +2,9 @@ from typing import *
 from collections import defaultdict
 from prefixspan import PrefixSpan
 
-T = TypeVar("T")
 Entries = List[Tuple[int, int]]
 
-def invertedindex(seqs: Iterable[Sequence[T]], entries: Entries = None) -> Mapping[T, Entries]:
+def invertedindex(seqs: Iterable[Sequence[Any]], entries: Entries = None) -> Mapping[Any, Entries]:
     index: Mapping[T, Entries] = defaultdict(list)
 
     for k, seq in enumerate(seqs):
@@ -21,7 +20,7 @@ def invertedindex(seqs: Iterable[Sequence[T]], entries: Entries = None) -> Mappi
     return index
 
 
-def nextentries(data: Sequence[Sequence[T]], entries: Entries) -> Mapping[T, Entries]:
+def nextentries(data: Sequence[Sequence[Any]], entries: Entries) -> Mapping[Any, Entries]:
     return invertedindex(
         (data[i][lastpos + 1:] for i, lastpos in entries),
         entries
@@ -34,7 +33,7 @@ class bide_alg:
         self.minsup = minsup
         self.minlen = minlen
         self.maxlen = maxlen
-        self._results = [] # type: Any
+        self._results = []
     
     def __reversescan(self, db, patt, matches, check_type):
         
@@ -71,10 +70,11 @@ class bide_alg:
                 
         return check
         
+    
     def isclosed(self, db, patt, matches):
         
         return self.__reversescan(db, [None, *patt, None], [(i, len(db[i])) for i, _ in matches], 'closed')
-
+    
     
     def canclosedprune(self, db, patt, matches):
         
@@ -83,14 +83,15 @@ class bide_alg:
     
     def bide_frequent_rec(self, patt, matches):
         
+        sup = len(matches)
+        
         # if pattern's length is greater than minimum length, consider whether it should be recorded
         if len(patt) >= self.minlen:
             
-            sup = len(matches)
             # if pattern's support < minsup, stop
             if sup < self.minsup:
                 return None
-            # if pattern is closed, record the pattern and its support
+            # if pattern is closed (backward extension check), record the pattern and its support
             if self.isclosed(self._db, patt, matches):
                 self._results.append((patt, sup))
                 
@@ -103,6 +104,10 @@ class bide_alg:
         for newitem, newmatches in occurs.items():
             # set the new pattern
             newpatt = patt + [newitem]
+            
+            # forward closed pattern checking
+            if (len(matches) == len(newmatches)) and ((patt, sup) in self._results):
+                self._results.remove((patt, sup))
                 
             # can we stop pruning the new pattern
             if self.canclosedprune(self._db, newpatt, newmatches):

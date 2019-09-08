@@ -1,15 +1,42 @@
 <h1>Bide algorithm</h1>
 Implement Bide algorithm for searching closed frequent sequences
 
-
-Example
+Example 1
 ---------------------------
-Import
+Samples are referred to J. Wang and J. Han[1].
 ```
 from bide_alg import *
+
+db = [
+    ['c', 'a', 'a', 'b', 'c'],
+    ['a', 'b', 'c', 'b'],
+    ['c', 'a', 'b', 'c'],
+    ['a', 'b', 'b', 'c', 'a']
+]
 ```
+Execute bide algorithm to find closed frequent patterns with the minimum support greater than or equal to 2, minimum length >=0, and maximum length <=5 on db by:
+```
+bide_obj = bide_alg(db, 2 , 0, 5)
+bide_obj._mine()
+```
+Show results:
+```
+bide_obj._results
+```
+```
+[(['c', 'a'], 3),
+ (['c', 'a', 'b', 'c'], 2),
+ (['c', 'b'], 3),
+ (['a', 'a'], 2),
+ (['a', 'b', 'c'], 4),
+ (['a', 'b', 'b'], 2)]
+```
+
+Example 2
+---------------------------
 Given data as follows, each element is a sequence. 
 ```
+from bide_alg import *
 db = [
     [0, 1, 2, 3, 4, 4],
     [1, 1, 1, 3, 4, 3],
